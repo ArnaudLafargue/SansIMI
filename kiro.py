@@ -1,6 +1,6 @@
 from typing import Tuple, TextIO
 import numpy as np
-from random import randint, shuffle
+import random as ran
 
 nodes_file = open("grenoble/nodes.csv")
 distances_file = open("grenoble/distances.csv")
