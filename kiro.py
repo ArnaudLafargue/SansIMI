@@ -1,13 +1,23 @@
 from typing import Tuple, TextIO
+import numpy as np
 
 nodes_file = open("grenoble/nodes.csv")
 distances_file = open("grenoble/distances.csv")
 
-
-def parser(file):
+def parser_nodes(file):
     lines = file.readlines()
+    lines.pop(0)
     lines = [line.strip().split(";") for line in lines]
+    for ligne in lines:
+        ligne[0] = float(ligne[0])
+        ligne[1] = float(ligne[1])
+        
     return lines
+
+def parser_distances(file): 
+    lin =distances_file.readlines()
+    DataIn = np.loadtxt(lin)
+    return DataIn
 
 class Instance:
 
