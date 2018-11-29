@@ -61,32 +61,19 @@ class Instance:
 
 I = Instance()
 
-def binom(I: Instance):
-    binoms = []
-    length = len(I.terminal)
-    not_paired = [I.terminal[i][0] for i in range(length)]
-    shuffle(not_paired)
 
-    for i_index in range(len(not_paired)):
-        i = not_paired[i_index]
-        min_dist = 10000000000
-        print(i)
-
-        for j_index in range(len(not_paired)):
-            j = not_paired[j_index]
-            if j!= i:
-                dist = I.l(i,j)
-                print(not_paired)
-                if dist < min_dist:
-
-                    min_dist = dist
-                    binoms += [(i, j)]
-
-                    m = min(i_index, j_index)
-                    M = max(i_index, j_index)
-                    if M + 1 == len(not_paired):
-                        not_paired = not_paired[:m] + not_paired[m + 1:M]
-                    else:
-                        not_paired = not_paired[:m] + not_paired[m + 1:M] + not_paired[M+1:]
-
-    return binoms
+def binom(I):
+    terminal = I.terminal
+    binome = []
+    while len(terminal)>2:
+        i = ran.randint(0,len(terminal)-1)
+        min = 1000000000000
+        j0=0
+        for j in range(len(terminal)):
+            if (i!=j):
+                if I.l(terminal[i][0],terminal[j][0]) +I.l(terminal[j][0],terminal[i][0])< min :
+                    j0 =j
+                    min = I.l(terminal[i][0],terminal[j][0]) +I.l(terminal[j][0],terminal[i][0])
+        binome.append ([terminal.pop(i)[0], terminal.pop(j0)[0]])
+    return binome
+       
