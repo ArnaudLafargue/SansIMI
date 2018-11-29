@@ -28,10 +28,10 @@ class Instance:
     def __init__(self):
         nodes = parser_nodes(nodes_file)
         distances = parser_distances(distances_file)
-        print(nodes)
-        print(distances)
     
     def type(self,i):
         return self.nodes[i][2]
+    
+    
     def l(self,i,j):
         return self.distances[self.distances.shape[0]*i+j]
