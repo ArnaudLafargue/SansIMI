@@ -1,0 +1,8 @@
+Proposition d'algorithme:
+
+1. On regroupe toutes les antennes par groupes de 5
+  
+2. Pour chaque point de distribution:
+   On cree une boucle structurante qui passe par l'antenne de chaque groupe qui minimise la longueur
+
+3. Pour chaque groupe on construit l'arbre de connexion partant de l'antenne connectée à la boucle qui minimse la longueur 
