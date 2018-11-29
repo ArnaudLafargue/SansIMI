@@ -104,15 +104,24 @@ def quadrunome(I):
             var = binome.pop(i)
             var2 = binome.pop(j0-1)
             quadrunome.append ([var[0],var[1], var2[0],var2[1]])
-            
-            
-            
-            
+                       
+               
+        compteur = 0        
     if (len(binome)>0):
         a = binome[0][0]
         b = binome[0][1]
+        compteur = 2
     if len(binome)>0:
         c = terminal[0][0]
-    quadrunome.append([a,b,c])
+        if compteur == 2 :
+            compteur = 3
+        if compteur == 0 :
+            compteur = 1
+    if compteur == 1:
+        quadrunome.append([c])
+    if compteur == 2: 
+        quadrunome.append([a,b])
+    if compteur == 3:
+        quadrunome.append([a,b,c])
     return quadrunome
 
