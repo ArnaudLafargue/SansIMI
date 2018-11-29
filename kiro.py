@@ -97,7 +97,22 @@ def quadrunome(I):
                     j0 =j
                     inf = min((I.l(binome[i][0],binome[j][0]) +I.l(binome[j][0],binome[i][0])  ,I.l(binome[i][0],binome[j][1])+I.l(binome[j][1],binome[i][0]),I.l(binome[i][1],binome[j][0])+I.l(binome[j][0],binome[i][1]),I.l(binome[i][1],binome[j][1])+I.l(binome[j][1],binome[i][1])))
         if j0 <i :
-            quadrunome.append ([binome.pop(i), binome.pop(j0)])
+            var = binome.pop(i)
+            var2 = binome.pop(j0)
+            quadrunome.append ([var[0],var[1], var2[0],var2[1]])
         if j0 >i:
-            quadrunome.append ([binome.pop(i), binome.pop(j0-1)])
-    return quadrunome,binome,terminal[0][0]
+            var = binome.pop(i)
+            var2 = binome.pop(j0-1)
+            quadrunome.append ([var[0],var[1], var2[0],var2[1]])
+            
+            
+            
+            
+    if (len(binome)>0):
+        a = binome[0][0]
+        b = binome[0][1]
+    if len(binome)>0:
+        c = terminal[0][0]
+    quadrunome.append([a,b,c])
+    return quadrunome
+
