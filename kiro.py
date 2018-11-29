@@ -3,6 +3,8 @@ import numpy as np
 import random as ran
 from operator import itemgetter, attrgetter, methodcaller
 import tsp
+import itertools
+
 nodes_file = open("nice/nodes.csv")
 distances_file = open("nice/distances.csv")
 output = open("grenoble/output.csv","w+")
@@ -146,9 +148,10 @@ class Antenna_group():
 
 
 Antenna_groups = [Antenna_group(i) for i in range(len(Q))]
+Antenna_groups_copie = [Antenna_groups[i] for i in range(len(Antenna_groups))]
 
 D = I.distribution
-print(D)
+#print(D)
 Groups = []
 for i in range(len(D)):
     d = D[i][0]
@@ -173,23 +176,39 @@ for G in Groups:
         if type(g)==type(1):
             group += [g]
         else:
-            print(g.antennas)
             line = [g.antennas[i] for i in range(len(g.antennas))]
             group += line
     groupes += [group]
+h=0
+mat =[0 for i in range(len(groupes))]
+dist= [0 for i in range(len(groupes))]
+r = [0 for i in range(len(groupes))]
+solution = [0 for i in range(len(groupes))]
 
-for group in groupes:
-    mat = [[I.l(i,j)+I.l(j,i) for i in range(len(group))] for j in range(len(group))]
 
-    r = range(len(mat))
-    dist = {(i, j): mat[i][j] for i in r for j in r}
-    solution = tsp.tsp(r, dist)
-    print(solution)
+for h in range(len(Groups)):
+    group = Groups[h]
+    group = group[1:]
+    group = [group[i].representative for i in range(len(group))]
+    print(group)
+
+    mat[h] = [[I.l(group[i],group[j])+I.l(group[j],group[i]) for i in range(len(group))] for j in range(len(group))]
+
+    r[h] = range(len(mat[h]))
+    dist[h] = {(i, j): mat[h][i][j] for i in r[h] for j in r[h]}
+    solution[h] = tsp.tsp(r[h], dist[h])
     line = ""
-    for i in range(len(solution[1])):
-        line+= str(solution[1][i])+" "
-    print(line)
+    for i in range(len(solution[h][1])):
+        line+= str(solution[h][1][i])+" "
     output.write("b "+line +"\n")
+
+for ant_group in Antenna_groups_copie:
+    chain=[]
+    chain+= ant_group.antennas
+    line = ""
+    for i in range(len(chain)):
+        line+= str(chain[i])+" "
+    output.write("c "+line +"\n")
 
 output.close()
 
