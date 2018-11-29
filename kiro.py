@@ -1,5 +1,6 @@
 from typing import Tuple, TextIO
 import numpy as np
+from random import randint, shuffle
 
 nodes_file = open("grenoble/nodes.csv")
 distances_file = open("grenoble/distances.csv")
@@ -26,12 +27,35 @@ def parser_distances(file):
 class Instance:
 
     def __init__(self):
-        nodes = parser_nodes(nodes_file)
-        distances = parser_distances(distances_file)
-    
-    def type(self,i):
+        self.nodes = parser_nodes(nodes_file)
+        self.distances = parser_distances(distances_file)
+        self.terminal = list_terminal(self.nodes)
+
+    def type(self, i):
         return self.nodes[i][2]
+
+    def xy(self,i):
+        return (self.nodes[i][0],self.nodes[i][1])
+
+    def l(self, i, j):
+        return self.distances[self.distances.shape[0] * i + j]
+
+def binom(I : Instance):
+    binoms = []
+    length = len(I.terminal)
+    index = [i for i in range(length)]
+    shuffle(index)
+    not_paired = [j in range(length)]
+    for i in index:
+        antenna_index = I.terminal[i][0]
+        min_dist = 10000000000
+        for j in not_paired:
+            dist = I.l(antenna_index,j)
+            if dist <min_dist:
+                min_dist = dist
+                
+            
+            
     
-    
-    def l(self,i,j):
-        return self.distances[self.distances.shape[0]*i+j]
+
+I = Instance()
