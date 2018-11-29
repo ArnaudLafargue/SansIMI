@@ -33,3 +33,5 @@ class Instance:
     
     def type(self,i):
         return self.nodes[i][2]
+    def l(self,i,j):
+        return self.distances[self.distances.shape[0]*i+j]
