@@ -61,16 +61,34 @@ def binom(I : Instance):
     index = [i for i in range(length)]
     shuffle(index)
     not_paired = [j in range(length)]
+    
     for i in index:
+        
         antenna_index = I.terminal[i][0]
         min_dist = 10000000000
-        for j in not_paired:
+        
+        for j_index in range(len(not_paired)):
+            j = not_paired[j_index]
             dist = I.l(antenna_index,j)
+            
             if dist <min_dist:
-                min_dist = dist
                 
+                min_dist = dist
+                binoms += [(i,j)]
+                
+                i_not_paired_index = not_paired.index(i)
+                m = min(i_not_paired_index,k)
+                M = max(i_not_paired_index,k)
+                if M+1 == len(not_paired):
+                    not_paired = not_paired[:m] + not_paired[m+1:] + not_paired(:M)
+                else:
+                    not_paired = not_paired[:m] + not_paired[m+1:] + not_paired(:M) + not_paired(M+1:)
+                    
+                
+    return binoms
+           
             
-            
+          
     
 
 I = Instance()
