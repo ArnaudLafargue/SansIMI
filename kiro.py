@@ -2,9 +2,10 @@ from typing import Tuple, TextIO
 import numpy as np
 import random as ran
 from operator import itemgetter, attrgetter, methodcaller
-
-nodes_file = open("grenoble/nodes.csv")
-distances_file = open("grenoble/distances.csv")
+import tsp
+nodes_file = open("nice/nodes.csv")
+distances_file = open("nice/distances.csv")
+output = open("grenoble/output.csv","w+")
 
 
 def parser_nodes(file):
@@ -113,7 +114,7 @@ def quadrunome(I):
             var2 = binome.pop(j0 - 1)
             quadrunome.append([var[0], var[1], var2[0], var2[1]])
 
-       compteur = 0        
+    compteur = 0
     if (len(binome)>0):
         a = binome[0][0]
         b = binome[0][1]
@@ -126,11 +127,12 @@ def quadrunome(I):
             compteur = 1
     if compteur == 1:
         quadrunome.append([c])
-    if compteur == 2: 
+    if compteur == 2:
         quadrunome.append([a,b])
     if compteur == 3:
         quadrunome.append([a,b,c])
     return quadrunome
+
 
 Q = quadrunome(I)
 
@@ -146,7 +148,8 @@ class Antenna_group():
 Antenna_groups = [Antenna_group(i) for i in range(len(Q))]
 
 D = I.distribution
-groups = []
+print(D)
+Groups = []
 for i in range(len(D)):
     d = D[i][0]
     distances = []
@@ -160,6 +163,34 @@ for i in range(len(D)):
     for k in group:
         Antenna_groups.pop(Antenna_groups.index(k))
 
-    groups += [[d] + group]
+    Groups += [[d] + group]
+
+groupes =[]
+for G in Groups:
+    group = []
+    for g in G:
+
+        if type(g)==type(1):
+            group += [g]
+        else:
+            print(g.antennas)
+            line = [g.antennas[i] for i in range(len(g.antennas))]
+            group += line
+    groupes += [group]
+
+for group in groupes:
+    mat = [[I.l(i,j)+I.l(j,i) for i in range(len(group))] for j in range(len(group))]
+
+    r = range(len(mat))
+    dist = {(i, j): mat[i][j] for i in r for j in r}
+    solution = tsp.tsp(r, dist)
+    print(solution)
+    line = ""
+    for i in range(len(solution[1])):
+        line+= str(solution[1][i])+" "
+    print(line)
+    output.write("b "+line +"\n")
+
+output.close()
 
 
