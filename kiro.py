@@ -39,6 +39,21 @@ class Instance:
 
     def l(self, i, j):
         return self.distances[self.distances.shape[0] * i + j]
+    def nodes_sorting(self):
+        terminal = []
+        distribution = []
+        i=0
+        self.nodes = np.array(self.nodes)
+        for i in range(self.nodes.shape[0]):
+            if self.nodes[i][2] == 't':
+                terminal.append([i,float(self.nodes[i][0]),float(self.nodes[i][1])])
+            if self.nodes[i][2] == 'd':
+                distribution.append([i,float(self.nodes[i][0]),float(self.nodes[i][1])])
+        return terminal,distribution
+    def list_terminal(self):
+        return self.nodes_sorting()[0]
+    def list_distribution(self):
+        return self.nodes_sorting()[1]
 
 def binom(I : Instance):
     binoms = []
