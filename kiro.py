@@ -30,6 +30,7 @@ class Instance:
         self.nodes = parser_nodes(nodes_file)
         self.distances = parser_distances(distances_file)
         self.terminal = self.list_terminal()
+        self.distribution = self.list_distribution()
 
     def type(self, i):
         return self.nodes[i][2]
@@ -125,3 +126,18 @@ def quadrunome(I):
         quadrunome.append([a,b,c])
     return quadrunome
 
+Q = quadrunome(I)
+
+class Antenna_group():
+    def __init__(self, index):
+        self.antennas = Q[index]
+        self.representative = self.antennas[ran.randint(0,len(self.antennas)-1)]
+
+    def dist(self, t_antenna):
+        return I.l(self.representative,t_antenna)+ I.l(t_antenna,self.representative)
+
+Antenna_groups = [Antenna_group(i) for i in range(len(Q))]
+
+d = I.distribution[0][0]
+
+print(Antenna_groups[1].dist(d))
