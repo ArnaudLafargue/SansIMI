@@ -66,15 +66,15 @@ def binom(I: Instance):
     length = len(I.terminal)
     index = [i for i in range(length)]
     shuffle(index)
-    not_paired = [j in range(length)]
+    not_paired = [j for j in range(length)]
 
     for i in index:
-
         antenna_index = I.terminal[i][0]
         min_dist = 10000000000
 
         for j_index in range(len(not_paired)):
             j = not_paired[j_index]
+            print(antenna_index,j)
             dist = I.l(antenna_index, j)
 
             if dist < min_dist:
@@ -92,3 +92,4 @@ def binom(I: Instance):
 
             return binoms
 
+binom(I)
