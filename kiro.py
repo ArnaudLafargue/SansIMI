@@ -30,3 +30,6 @@ class Instance:
         distances = parser_distances(distances_file)
         print(nodes)
         print(distances)
+    
+    def type(self,i):
+        return self.nodes[i][2]
