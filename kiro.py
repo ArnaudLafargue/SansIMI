@@ -121,7 +121,6 @@ def quadrunome(I):
     quadrunome.append([a, b, c])
     return quadrunome
 
-
 Q = quadrunome(I)
 
 class Antenna_group():
@@ -136,13 +135,20 @@ class Antenna_group():
 Antenna_groups = [Antenna_group(i) for i in range(len(Q))]
 
 D = I.distribution
+groups = []
 for i in range(len(D)):
     d = D[i][0]
-    group = []
     distances = []
     for j in range(len(Antenna_groups)):
         distances += [(Antenna_groups[j].dist(d),j)]
     sorted_distances = sorted(distances, key=itemgetter(0))
-    print(sorted_distances)
+    group = sorted_distances[:min(len(sorted_distances),6)]
+    group = [group[i][1] for i in range(len(group))]
+    group = [Antenna_groups[group[i]] for i in range(len(group))]
+
+    for k in group:
+        Antenna_groups.pop(Antenna_groups.index(k))
+
+    groups += [[d] + group]
 
 
