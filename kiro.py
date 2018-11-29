@@ -44,8 +44,8 @@ class Instance:
         terminal = []
         distribution = []
         i = 0
-        self.nodes = np.array(self.nodes)
-        for i in range(self.nodes.shape[0]):
+        
+        for i in range(len(self.nodes)):
             if self.nodes[i][2] == 't':
                 terminal.append([i, float(self.nodes[i][0]), float(self.nodes[i][1])])
             if self.nodes[i][2] == 'd':
@@ -57,10 +57,10 @@ class Instance:
 
     def list_distribution(self):
         return self.nodes_sorting()[1]
-
+    
 
 I = Instance()
-
+T = [i for i in I.terminal]
 
 def binom(I):
     terminal = I.terminal
@@ -74,6 +74,28 @@ def binom(I):
                 if I.l(terminal[i][0],terminal[j][0]) +I.l(terminal[j][0],terminal[i][0])< min :
                     j0 =j
                     min = I.l(terminal[i][0],terminal[j][0]) +I.l(terminal[j][0],terminal[i][0])
-        binome.append ([terminal.pop(i)[0], terminal.pop(j0)[0]])
-    return binome
+        if j0 <i :
+            binome.append ([terminal.pop(i)[0], terminal.pop(j0)[0]])
+        if j0 >i:
+            binome.append ([terminal.pop(i)[0], terminal.pop(j0-1)[0]])
+    return binome,terminal
+
+
+        
+def quadrunome(binome,terminal):
+    
+    while len(binome)>4:
+        i = ran.randint(0,len(binome)-1)
+        min = 1000000000000
+        j0=0
+        for j in range(len(binome)):
+            if (i!=j):
+                if I.l(binome[i][0],binome[j][0]) +I.l(binome[j][0],binome[i][0])< min :
+                    j0 =j
+                    min = I.l(terminal[i][0],terminal[j][0]) +I.l(terminal[j][0],terminal[i][0])
+        if j0 <i :
+            binome.append ([terminal.pop(i)[0], terminal.pop(j0)[0]])
+        if j0 >i:
+            binome.append ([terminal.pop(i)[0], terminal.pop(j0-1)[0]])
+    return binome,terminal
        
