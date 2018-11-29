@@ -65,7 +65,7 @@ T = [i for i in I.terminal]
 def binom(I):
     terminal = I.terminal
     binome = []
-    while len(terminal)>2:
+    while len(terminal)>1:
         i = ran.randint(0,len(terminal)-1)
         min = 1000000000000
         j0=0
@@ -78,24 +78,26 @@ def binom(I):
             binome.append ([terminal.pop(i)[0], terminal.pop(j0)[0]])
         if j0 >i:
             binome.append ([terminal.pop(i)[0], terminal.pop(j0-1)[0]])
-    return binome,terminal
+    return (binome,terminal)
 
 
         
-def quadrunome(binome,terminal):
-    
-    while len(binome)>4:
+def quadrunome(I):
+    bino = binom(I)
+    binome = bino[0]
+    terminal = bino[1]
+    quadrunome = []
+    while len(binome)>1:
         i = ran.randint(0,len(binome)-1)
-        min = 1000000000000
+        inf = 1000000000000
         j0=0
         for j in range(len(binome)):
             if (i!=j):
-                if I.l(binome[i][0],binome[j][0]) +I.l(binome[j][0],binome[i][0])< min :
+                if min((I.l(binome[i][0],binome[j][0]) +I.l(binome[j][0],binome[i][0])  ,I.l(binome[i][0],binome[j][1])+I.l(binome[j][1],binome[i][0]),I.l(binome[i][1],binome[j][0])+I.l(binome[j][0],binome[i][1]),I.l(binome[i][1],binome[j][1])+I.l(binome[j][1],binome[i][1]))) < inf :
                     j0 =j
-                    min = I.l(terminal[i][0],terminal[j][0]) +I.l(terminal[j][0],terminal[i][0])
+                    inf = min((I.l(binome[i][0],binome[j][0]) +I.l(binome[j][0],binome[i][0])  ,I.l(binome[i][0],binome[j][1])+I.l(binome[j][1],binome[i][0]),I.l(binome[i][1],binome[j][0])+I.l(binome[j][0],binome[i][1]),I.l(binome[i][1],binome[j][1])+I.l(binome[j][1],binome[i][1])))
         if j0 <i :
-            binome.append ([terminal.pop(i)[0], terminal.pop(j0)[0]])
+            quadrunome.append ([binome.pop(i), binome.pop(j0)])
         if j0 >i:
-            binome.append ([terminal.pop(i)[0], terminal.pop(j0-1)[0]])
-    return binome,terminal
-       
+            quadrunome.append ([binome.pop(i), binome.pop(j0-1)])
+    return quadrunome,binome,terminal[0][0]
