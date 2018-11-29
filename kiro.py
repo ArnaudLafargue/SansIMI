@@ -38,7 +38,7 @@ class Instance:
         return (self.nodes[i][0], self.nodes[i][1])
 
     def l(self, i, j):
-        return self.distances[self.distances.shape[0] * i + j]
+        return self.distances[len(self.nodes) * i + j]
 
     def nodes_sorting(self):
         terminal = []
@@ -64,32 +64,29 @@ I = Instance()
 def binom(I: Instance):
     binoms = []
     length = len(I.terminal)
-    index = [i for i in range(length)]
-    shuffle(index)
-    not_paired = [j for j in range(length)]
+    not_paired = [I.terminal[i][0] for i in range(length)]
+    shuffle(not_paired)
 
-    for i in index:
-        antenna_index = I.terminal[i][0]
+    for i_index in range(len(not_paired)):
+        i = not_paired[i_index]
         min_dist = 10000000000
+        print(i)
 
         for j_index in range(len(not_paired)):
             j = not_paired[j_index]
-            print(antenna_index,j)
-            dist = I.l(antenna_index, j)
+            if j!= i:
+                dist = I.l(i,j)
+                print(not_paired)
+                if dist < min_dist:
 
-            if dist < min_dist:
+                    min_dist = dist
+                    binoms += [(i, j)]
 
-                min_dist = dist
-                binoms += [(i, j)]
+                    m = min(i_index, j_index)
+                    M = max(i_index, j_index)
+                    if M + 1 == len(not_paired):
+                        not_paired = not_paired[:m] + not_paired[m + 1:M]
+                    else:
+                        not_paired = not_paired[:m] + not_paired[m + 1:M] + not_paired[M+1:]
 
-                i_not_paired_index = not_paired.index(i)
-                m = min(i_not_paired_index, k)
-                M = max(i_not_paired_index, k)
-                if M + 1 == len(not_paired):
-                    not_paired = not_paired[:m] + not_paired[m + 1:] + not_paired[:M]
-                else:
-                    not_paired = not_paired[:m] + not_paired[m + 1:] + not_paired[:M] + not_paired[M + 1:]
-
-            return binoms
-
-binom(I)
+    return binoms
