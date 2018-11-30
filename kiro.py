@@ -190,7 +190,6 @@ for h in range(len(Groups)):
     group = Groups[h]
     group = group[1:]
     group = [group[i].representative for i in range(len(group))]
-    print(group)
 
     mat[h] = [[I.l(group[i],group[j])+I.l(group[j],group[i]) for i in range(len(group))] for j in range(len(group))]
 
@@ -198,8 +197,10 @@ for h in range(len(Groups)):
     dist[h] = {(i, j): mat[h][i][j] for i in r[h] for j in r[h]}
     solution[h] = tsp.tsp(r[h], dist[h])
     line = ""
-    for i in range(len(solution[h][1])):
-        line+= str(solution[h][1][i])+" "
+    sol = [group[i] for i in solution[h][1]]
+    print(sol)
+    for i in range(len(sol)):
+        line+= str(sol[i])+" "
     output.write("b "+line +"\n")
 
 for ant_group in Antenna_groups_copie:
