@@ -1,0 +1,8 @@
+1) Faire un parsing
+2) Tracer des boucles de 30 antennes autour des distributions. 
+- Comment avoir des boucles efficaces ? 
+3) Mettre en place le regroupement par 5 des antennes ?
+-Comment regrouper efficacement les antennes par groupe de 5 ? 
+4) On met en place la métaheuristique :
+- quel métaheuristique choisir ? --> la température 
+- qu'est ce qu'un voisinage, comment on se déplace dans l'espace des solutions admissibles ? 
