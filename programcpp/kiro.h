@@ -1,11 +1,17 @@
-#ifndef KIRO_H
-#define KIRO_H
+#pragma once
+#include <iostream>
+using namespace std;
 
-
-class kiro
+class CSVReader
 {
-public:
-    kiro();
-};
+    string fileName;
+    string delimeter;
 
-#endif // KIRO_H
+public:
+    CSVReader(string filename, string delm = ",") :
+            fileName(filename), delimeter(delm)
+    { }
+
+    // Function to fetch data from a CSV File
+    vector<vector<string> > getData();
+};

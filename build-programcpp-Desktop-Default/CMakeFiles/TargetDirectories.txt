@@ -1,0 +1,3 @@
+/home/charles/Documents/SansIMI/build-programcpp-Desktop-Default/CMakeFiles/rebuild_cache.dir
+/home/charles/Documents/SansIMI/build-programcpp-Desktop-Default/CMakeFiles/Kiro.dir
+/home/charles/Documents/SansIMI/build-programcpp-Desktop-Default/CMakeFiles/edit_cache.dir
