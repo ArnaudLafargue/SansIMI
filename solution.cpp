@@ -146,3 +146,73 @@ void solution::fichier(const parser& Parser, const cluster& Cluster){
     }
 
 }
+
+solutions solutions_parser(){
+
+    ifstream bestsols_file("/home/azam/Documents/Rechop/grenoble.txt", ios::in); // on ouvre le fichier en lecture
+
+    vector<vector<int>> file_table;
+    solutions sols;
+    int sol_count = 0;
+    for (string line; getline(bestsols_file,line);){
+        vector<int> line_table;
+        if (line[0] == 'b')
+            line_table.push_back(-1);
+        else
+            line_table.push_back(0);
+        int l = line.length();
+
+        int i=2;
+        while (i<l){
+
+            string number;
+            while (line[i] != ' ' && i<l){
+                number += line[i];
+                i+=1;
+            }
+            i+=1;
+            line_table.push_back(stoi(number));
+        }
+        file_table.push_back(line_table);
+    }
+
+    int i =0;
+    int count =0;
+    while (i<file_table.size()){
+        int collect_lines_number = 0;
+        if (file_table[i][0] == -1){
+            solution bestsol;
+
+            bool a = true;
+            while (i+collect_lines_number+1<file_table.size() && a)
+                if (file_table[i+collect_lines_number+1][0] == 0)
+                        collect_lines_number += 1;
+                    else a = false;
+            bestsol.bouclesize = file_table[i].size()-1;
+            for (int j=0;j<bestsol.bouclesize;j++)
+                bestsol.Boucle[j] = file_table[i][j+1];
+
+            for (int k=0; k<30;k++)
+                bestsol.Antenne[k].size_antennes =0;
+
+            if (collect_lines_number !=0)
+                for (int k=0;k<collect_lines_number;k++)
+                    for (int j=0;j<bestsol.bouclesize;j++)
+                        if (bestsol.Boucle[j] == file_table[i+k+1][1]){
+                            bestsol.Antenne[j].size_antennes = file_table[i+k+1].size() - 2;
+                            for (int n=0;n< bestsol.Antenne[j].size_antennes; n++)
+                                bestsol.Antenne[j].liste_antenne[n] = file_table[i+k+1][n+2];
+                        }
+
+            sols.solutions_list[count] = bestsol;
+            count+=1;
+            sols.solutions_number +=1;
+            }
+
+
+        i+=max(1,collect_lines_number);
+    }
+
+    bestsols_file.close();
+    return sols;
+}
