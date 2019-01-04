@@ -25,3 +25,10 @@ public:
 };
 void print(solution Sol,const parser& Parser, const cluster& Cluster);
 void InitRandom();
+
+struct solutions{
+    solution solutions_list[40];
+    int solutions_number;
+};
+
+solutions solutions_parser();
