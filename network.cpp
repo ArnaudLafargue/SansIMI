@@ -3,7 +3,7 @@
 using namespace std;
 
 object::object(){
-    coordinates = vector<double> (0 ,0);
+    coords = {0,0};
     index = 0;
     type = 0;
 
@@ -31,12 +31,9 @@ network::network()
 
         char t = line[i];
 
-        vector<double> c;
-        c.push_back(stod(x));
-        c.push_back(stod(y));
-
+        coordinates c = {stod(x),stod(y)};
         object o;
-        o.coordinates = c;
+        o.coords = c;
         o.index = index;
         if (t == 't'){
             o.type = 1;

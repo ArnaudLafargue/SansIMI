@@ -6,15 +6,15 @@ recuit::recuit(){}
 int pop(antenna_group& group,int j){
     int output = group.antennas[j];
     int g[5];
-    for (int i=0;i<group.group_size;i++){
+    for (int i=0;i<group.group_size;i++)
         g[i]=group.antennas[i];
-    }
-    if (j+1 < group.group_size){
-        for(int i =j;i<group.group_size;i++){
+
+    if (j+1 < group.group_size)
+        for(int i =j;i<group.group_size;i++)
             group.antennas[i]=g[i+1];
-        }
-    }
-    group.group_size -= 1;
+
+
+    group.group_size = group.group_size - 1;
     return output;
 }
 
@@ -38,7 +38,18 @@ void push(antenna_group& group,int valeur, int position){
     }
 }
 
-solution recuit::heuristique(int n) {
+solution recuit::heuristique(int n, bool display) {
+
+    Window f;
+    int w;
+    int h;
+
+    if (display){
+        w = 1500;
+        h = 1000;
+        f = openWindow(w,h);
+    }
+
     int cluster_size = Clusters_const.cluster_list[n].size;
     clusters C = Clusters_const;
     assert(cluster_size<600);
@@ -61,9 +72,13 @@ solution recuit::heuristique(int n) {
     xb.loop_size = loop_size;
     xb.first_solution(n);
 
-    while(loop_size<min(30,cluster_size)+1){
+    if (display){
+        x.cluster_display(n,f,w,h,true);
+        click();
+    }
 
-        cout << "boucle size" << loop_size << endl;
+    while(loop_size<min(30,cluster_size)+1){
+        cout << "loop size" << loop_size << endl;
 
         InitRandom();
         T = 100.;
@@ -71,16 +86,21 @@ solution recuit::heuristique(int n) {
         bool unchanged;
         //cout << "always working ? " << endl;
         while(T>1){
-            for (int counter =0; counter<max_iter;counter++){
+            for (int counter =0; counter<max_iter + 0*max_iter*100*int(loop_size/min(30,cluster_size));counter++){
 
                 if (x.simple_cost2(n) < xb.simple_cost2(n)){
                     x.copy(xb);
+                    if (display)
+                        x.cluster_display(n,f,w,h,true);
+
                     cout << xb.simple_cost2(n) << "ici"<< endl;
                 }
 
                 x.copy(xprime);
 
                 unchanged = true;
+                
+
 
                 while (unchanged) {
 
@@ -115,17 +135,16 @@ solution recuit::heuristique(int n) {
                     }
 
                     else if ((xprime.antenna_groups[i].group_size != 0) && (xprime.antenna_groups[j].group_size != 5)){
-                            int i1 = hasard(0,xprime.antenna_groups[i].group_size-1);
-                            int j1 = hasard(0,xprime.antenna_groups[j].group_size);
-                            // on enlève le i1 élément de la première chaine et on le rajoute dans j
+                        int i1 = hasard(0,xprime.antenna_groups[i].group_size-1);
+                        int j1 = hasard(0,xprime.antenna_groups[j].group_size);
+                        // on enlève le i1 élément de la première chaine et on le rajoute dans j
 
-                            push(xprime.antenna_groups[j],pop(xprime.antenna_groups[i],i1),j1);
-                            unchanged = false;
-                            lastop = 3;
+                        push(xprime.antenna_groups[j],pop(xprime.antenna_groups[i],i1),j1);
+                        unchanged = false;
+                        lastop = 3;
 
-                        }
                     }
-
+                }
 
                 int cxprime = xprime.simple_cost2(n);
                 int cx = x.simple_cost2(n);
@@ -193,6 +212,10 @@ solution recuit::heuristique(int n) {
         }
 
 
+    }
+    if (display){
+        click();
+        closeWindow(f);
     }
     return xb;
 }

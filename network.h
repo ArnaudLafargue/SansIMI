@@ -8,17 +8,22 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include<Imagine/Common.h>
+#include<Imagine/Graphics.h>
 
 using namespace std;
+using namespace Imagine;
 
-class object{
-public:
+struct coordinates{
+    double x;
+    double y;
+};
+
+struct object{
     object();
-    vector<double> coordinates;
+    coordinates coords;
     int index;
     int type;
-
-
 };
 
 
