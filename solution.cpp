@@ -27,7 +27,7 @@ solution::solution(const parser& Parser,const cluster& Cluster)
 solution::solution(){
     bouclesize=0;
 };
-void solution::first_solution(parser& Parser, cluster& Cluster)
+void solution::first_solution(const parser& Parser, cluster& Cluster)
 {
     cluster CopyCluster;
     Cluster.copy(CopyCluster);
@@ -124,7 +124,7 @@ void print(solution Sol,const parser& Parser, const cluster& Cluster){
 }
 
 
-ofstream f("/home/azam/Documents/Rechop/grenoble.txt");
+ofstream f("/home/arnaud/Documents/Rechop/paris_parser.txt");
 void solution::fichier(const parser& Parser, const cluster& Cluster){
 
     f << "b ";
@@ -188,9 +188,10 @@ solutions solutions_parser(){
                 if (file_table[i+collect_lines_number+1][0] == 0)
                         collect_lines_number += 1;
                     else a = false;
-            bestsol.bouclesize = file_table[i].size()-1;
+            bestsol.bouclesize = file_table[i].size()-2;
+            bestsol.cluster_id = file_table[i][1];
             for (int j=0;j<bestsol.bouclesize;j++)
-                bestsol.Boucle[j] = file_table[i][j+1];
+                bestsol.Boucle[j] = file_table[i][j+2];
 
             for (int k=0; k<30;k++)
                 bestsol.Antenne[k].size_antennes =0;
