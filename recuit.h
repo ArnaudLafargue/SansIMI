@@ -1,9 +1,9 @@
 #pragma once
-#include"solution.h"
+#include"solutions_parser.h"
 
 class recuit{
 public:
-    int max_iter = 1000;
+    int max_iter = 10000;
     float T = 100.;
     float alpha = 0.9;
 

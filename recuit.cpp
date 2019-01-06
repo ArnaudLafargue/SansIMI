@@ -4,6 +4,7 @@
 recuit::recuit(){}
 
 int pop(antenna_group& group,int j){
+    assert(j<5);
     int output = group.antennas[j];
     int g[5];
     for (int i=0;i<group.group_size;i++)
@@ -53,13 +54,11 @@ solution recuit::heuristique(int n, bool display) {
     int cluster_size = Clusters_const.cluster_list[n].size;
     clusters C = Clusters_const;
     assert(cluster_size<600);
-    int lastop = 8;
     InitRandom();
 
     solution x,
-             xb,
-             xprime,
-             xseconde;
+             x_best,
+             x_prime;
 
     double p,
            proba1;
@@ -67,42 +66,40 @@ solution recuit::heuristique(int n, bool display) {
     int loop_size = int(cluster_size/6)+1;
 
     x.loop_size = loop_size;
-    x.first_solution(n);
 
-    xb.loop_size = loop_size;
-    xb.first_solution(n);
+    x.first_solution(n);
+    x.compute_cost();
+    x.copy(x_best);
+    x.copy(x_prime);
 
     if (display){
-        x.cluster_display(n,f,w,h,true);
+        x.cluster_display(f,w,h,true);
         click();
     }
 
     while(loop_size<min(30,cluster_size)+1){
-        cout << "loop size" << loop_size << endl;
+        x.copy(x_prime);
 
-        InitRandom();
+        cout <<"Cluster: "<<n<< " loop size: " << loop_size << endl;
+
         T = 100.;
-        proba1 = float(loop_size)/cluster_size;
-        bool unchanged;
-        //cout << "always working ? " << endl;
+        proba1 = float (loop_size)/cluster_size;
+        bool elements_to_swap;
         while(T>1){
-            for (int counter =0; counter<max_iter + 0*max_iter*100*int(loop_size/min(30,cluster_size));counter++){
+            for (int counter =0; counter<max_iter;counter++){
 
-                if (x.simple_cost2(n) < xb.simple_cost2(n)){
-                    x.copy(xb);
+                if (x.cost < x_best.cost){
+                    x.copy(x_best);
                     if (display)
-                        x.cluster_display(n,f,w,h,true);
+                        x.cluster_display(f,w,h,true);
 
-                    cout << xb.simple_cost2(n) << "ici"<< endl;
+                    cout <<"best cost: "<< x_best.cost << endl;
                 }
 
-                x.copy(xprime);
 
-                unchanged = true;
-                
+                elements_to_swap = true;
 
-
-                while (unchanged) {
+                while (elements_to_swap) {
 
                     int i = hasard(0,loop_size-1);
                     int j = hasard(0,loop_size-1);
@@ -110,94 +107,63 @@ solution recuit::heuristique(int n, bool display) {
                     p = proba();
 
                     if ((p<proba1*proba1) && (i!=j)){
-                        antenna_group A = xprime.antenna_groups[i];
-                        antenna_group B = xprime.antenna_groups[j];
-                        int a1 = xprime.loop[i];
-                        int b1 = xprime.loop[j];
-                        xprime.loop[i]=b1;
-                        xprime.loop[j]=a1;
-                        xprime.antenna_groups[i]=B;
-                        xprime.antenna_groups[j]=A;
-                        unchanged = false;
-                        lastop = 1;
+                        // On echange les elements i et j de la boucle et les boucles de collecte associees
+                        antenna_group a_g_i = x_prime.antenna_groups[i];
+                        antenna_group a_g_j = x_prime.antenna_groups[j];
+                        int l_i = x_prime.loop[i];
+                        int l_j = x_prime.loop[j];
+                        x_prime.loop[i]=l_j;
+                        x_prime.loop[j]=l_i;
+                        x_prime.antenna_groups[i]=a_g_j;
+                        x_prime.antenna_groups[j]=a_g_i;
+                        elements_to_swap = false;
                     }
 
-                    else if ((p<proba1*proba1+2*proba1*(1-proba1)) && (xprime.antenna_groups[j].group_size!=0)) {
-                        int j1=hasard(0,xprime.antenna_groups[j].group_size -1);
-                        int a1 = xprime.loop[i];
-                        int a2 = xprime.antenna_groups[j].antennas[j1];
-                        xprime.loop[i] = a2;
-                        xprime.antenna_groups[j].antennas[j1]= a1;
+                    else if ((p<proba1*proba1+2*proba1*(1-proba1)) && (x_prime.antenna_groups[j].group_size!=0)) {
+                        // On echange l'element i de la boucle avec l'antenne k du groupe j
+                        int k = hasard(0,x_prime.antenna_groups[j].group_size-1);
+                        int l_i = x_prime.loop[i];
+                        int a_g_j_a_k = x_prime.antenna_groups[j].antennas[k];
+                        x_prime.loop[i] = a_g_j_a_k;
+                        x_prime.antenna_groups[j].antennas[k]= l_i;
 
-                        unchanged = false;
-                        lastop = 2;
-
-                    }
-
-                    else if ((xprime.antenna_groups[i].group_size != 0) && (xprime.antenna_groups[j].group_size != 5)){
-                        int i1 = hasard(0,xprime.antenna_groups[i].group_size-1);
-                        int j1 = hasard(0,xprime.antenna_groups[j].group_size);
-                        // on enlève le i1 élément de la première chaine et on le rajoute dans j
-
-                        push(xprime.antenna_groups[j],pop(xprime.antenna_groups[i],i1),j1);
-                        unchanged = false;
-                        lastop = 3;
+                        elements_to_swap = false;
 
                     }
+
+                    else if ((x_prime.antenna_groups[i].group_size != 0) && (x_prime.antenna_groups[j].group_size != 5)){
+                        //On remplace l'antenne j1 du groupe j par l'antenne i1 du groupe i
+                        int i1 = hasard(0,x_prime.antenna_groups[i].group_size-1);
+                        int j1 = hasard(0,x_prime.antenna_groups[j].group_size);
+
+                        push(x_prime.antenna_groups[j],pop(x_prime.antenna_groups[i],i1),j1);
+                        elements_to_swap = false;
+
+                    }
                 }
 
-                int cxprime = xprime.simple_cost2(n);
-                int cx = x.simple_cost2(n);
-                if (cxprime<cx){
-                    xprime.copy(x);
-                }
+                //On calcule les couts
+                x_prime.compute_cost();
 
-                else if(p<exp(-(cxprime-cx)/T)){
-                    xprime.copy(x);
-                }
-
-
-
-                x.copy(xseconde);
-
-                int i = hasard(0,loop_size-1);
-                int j = hasard(0,loop_size-1);
-
-
-                if ((xseconde.antenna_groups[i].group_size != 0) && (xseconde.antenna_groups[j].group_size != 5)){
-
-                    int i1 = hasard(0,xseconde.antenna_groups[i].group_size-1);
-                    int j1 = hasard(0,xseconde.antenna_groups[j].group_size);
-
-                    // on enlève le i1 élément de la première chaine et on le rajoute dans j
-
-                    push(xseconde.antenna_groups[j],pop(xseconde.antenna_groups[i],i1),j1);
-                }
-
-                int cxseconde = xseconde.simple_cost2(n);
-                cx = x.simple_cost2(n);
-                if (cxseconde<cx){
-                    xseconde.copy(x);
-                }
-                else if(p<exp(-(cxseconde-cx)/T)){
-                    xseconde.copy(x);
-                }
-
-
+                // si x_prime est meilleur ou au hasard si l'ecart de cout est pas trop grand
+                if (x_prime.cost<x.cost || p<exp(-(x_prime.cost-x.cost)/T))
+                    x_prime.copy(x);
+                else
+                    x.copy(x_prime);
 
             }
 
             T= alpha*T;
         }
 
-        unchanged = true;
+        bool change_size = true;
 
-        if(loop_size==cluster_size){
+        if(loop_size==cluster_size || loop_size ==30){
             loop_size+=1;//stopping condition
-            unchanged= false;
+            change_size= false;
         }
 
-        while (unchanged){
+        while (change_size){
             int i = hasard(0,loop_size-1);
             x.antenna_groups[loop_size].group_size = 0;
             if (x.antenna_groups[i].group_size != 0){
@@ -205,17 +171,19 @@ solution recuit::heuristique(int n, bool display) {
                 // on rajoute un élément dans loop
                 int i1 = hasard(0,x.antenna_groups[i].group_size-1);
                 x.loop[loop_size]=pop(x.antenna_groups[i],i1);
-                unchanged=false;
                 x.loop_size+=1;
                 loop_size+=1;
+                change_size=false;
             }
         }
-
-
+        x.compute_cost();
     }
+
     if (display){
+        x_best.cluster_display(f,w,h,true);
+        drawString(100,160,"Cost: " + to_string(x_best.cost),GREEN,20);
         click();
         closeWindow(f);
     }
-    return xb;
+    return x_best;
 }

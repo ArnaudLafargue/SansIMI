@@ -28,9 +28,10 @@ struct object{
 
 
 
-class network{
-public:
+struct network{
+
     network();
+
     vector<object> antennas;
     vector<int> distances;
     vector<object> t_antennas;

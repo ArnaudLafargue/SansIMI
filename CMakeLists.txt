@@ -12,7 +12,7 @@ find_package(Imagine REQUIRED)
 find_package (Threads)
 
 add_executable(Rechop
-               main.cpp clusters.h clusters.cpp solution.cpp solution.h recuit.cpp recuit.h network.cpp network.h )
+               main.cpp clusters.h clusters.cpp solution.cpp solution.h recuit.cpp recuit.h network.cpp network.h solutions_parser.cpp solutions_parser.h)
 ImagineUseModules(Rechop Graphics)
 
 

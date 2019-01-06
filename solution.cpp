@@ -40,26 +40,24 @@ solution::solution(){
 
 void solution::first_solution(int n){
     InitRandom();
+    dist_id = n;
+    cluster cluster_copy = Clusters_const.cluster_list[n];
 
-    int cluster_copy[Clusters_const.cluster_list[n].size];
-
-    for (int i=0; i<Clusters_const.cluster_list[n].size;i++)
-        cluster_copy[i] = Clusters_const.cluster_list[n].cluster_antennas[i].index;
 
     for (int i=0; i<Clusters_const.cluster_list[n].size;i++){
         int j = hasard(0,Clusters_const.cluster_list[n].size-1);
         if (i!=j){
-            int v_i = cluster_copy[i];
-            int v_j = cluster_copy[j];
-            cluster_copy[i] = v_j;
-            cluster_copy[j] = v_i;
+            object v_i = cluster_copy.cluster_antennas[i];
+            object v_j = cluster_copy.cluster_antennas[j];
+            cluster_copy.cluster_antennas[i] = v_j;
+            cluster_copy.cluster_antennas[j] = v_i;
         }
     }
 
     int j=0;
     for (int i=0; i<loop_size;i++){
-        loop[i] = cluster_copy[i];
-        antenna_groups[i].group_size =0;;
+        loop[i] = cluster_copy.cluster_antennas[i].index;
+        antenna_groups[i].group_size =0;
         }
 
     for (int i=0;i<Clusters_const.cluster_list[n].size-loop_size;i++)
@@ -69,7 +67,7 @@ void solution::first_solution(int n){
         {
             j = hasard(0,loop_size-1);
             if (antenna_groups[j].group_size < 5){
-                antenna_groups[j].antennas[antenna_groups[j].group_size] =cluster_copy[i+loop_size-1];
+                antenna_groups[j].antennas[antenna_groups[j].group_size] =cluster_copy.cluster_antennas[i+loop_size].index;
                 antenna_groups[j].group_size=antenna_groups[j].group_size+ 1;
                 a=false;
             }
@@ -79,16 +77,15 @@ void solution::first_solution(int n){
 }
 
 
-int solution::simple_cost2(int n) {
-
+int solution::compute_cost() {
     cost =0;
-    cost += l(Clusters_const.cluster_list[n].point_distribution,loop[0]);
+    cost += l(dist_id,loop[0]);
     if(loop_size>0){
     for (int i=0;i<loop_size-1;i++){
         cost+= l(loop[i],loop[i+1]);
     }
 
-    cost += l(loop[loop_size-1],Clusters_const.cluster_list[n].point_distribution);
+    cost += l(loop[loop_size-1],dist_id);
     }
 
     for (int i=0;i<loop_size;i++){
@@ -126,29 +123,9 @@ void solution::copy(solution &Sol) const{
 }
 
 
-void solution::print(int n) const{
-    cout << "b ";
-    cout << Clusters_const.cluster_list[n].point_distribution;
-    for (int i=0;i<loop_size;i++){
-        cout <<" "<< loop[i];
-    }
-    cout << endl;
-
-    for(int i=0;i<loop_size;i++){
-        if(antenna_groups[i].group_size>0){
-            cout << "c ";
-            cout << loop[i];
-            for(int j =0;j<antenna_groups[i].group_size;j++){
-                cout <<" "<< antenna_groups[i].antennas[j];
-            }
-            cout << endl;
-        }
-    }
-
-}
 ofstream f("/home/arnaud/Documents/Rechop/paris0.txt");
 
-void solution::fichier(int n) const{
+void solution::save_to_file(int n) const{
     //ofstream f("/home/arnaud/Documents/Rechop/paris" +to_string(n) + ".txt");
 
     f << "b ";
@@ -179,14 +156,15 @@ int normalize(double x, int  w, double xmin, double xmax){
         result =w;
     return result;
 }
-void solution::full_display(int n, Window f, int w, int h) const{
+void solution::full_display(Window f, int w, int h) const{
+    int n = dist_id;
 
     double xmin = 10000000;
     double xmax = 0;
     double ymin = 10000000;
     double ymax = 0;
     coordinates ccfirst,cclast;
-    coordinates distrib_point = Network_const.antennas[Clusters_const.cluster_list[n].point_distribution].coords;
+    coordinates distrib_point = Network_const.antennas[n].coords;
     for (int i=0; i<Network_const.size_antennas;i++){
 
             coordinates c = Network_const.antennas[i].coords;
@@ -262,19 +240,21 @@ void solution::full_display(int n, Window f, int w, int h) const{
 
 }
 
-void solution::cluster_display(int n, Window f, int w, int h, bool timed) const{
+void solution::cluster_display(Window f, int w, int h, bool timed) const{
     clearWindow();
 
+    int n = dist_id;
+    drawString(100,100,"Cluster: " + to_string(n),BLACK,20);
+    drawString(100,130,"Loop size: " + to_string(loop_size),BLACK,20);
+    drawString(100,160,"Cost: " + to_string(cost),RED,20);
 
-    drawString(100,100,to_string(cost),RED,40);
     double xmin = 10000000;
     double xmax = 0;
     double ymin = 10000000;
     double ymax = 0;
 
     coordinates ccfirst,cclast;
-    assert (n == Clusters_const.cluster_list[n].point_distribution);
-    coordinates distrib_point = Network_const.antennas[Clusters_const.cluster_list[n].point_distribution].coords;
+    coordinates distrib_point = Network_const.antennas[n].coords;
     for (int i=0; i<loop_size;i++){
         for (int j=0; j<antenna_groups[i].group_size;j++){
 
@@ -368,74 +348,3 @@ void solution::cluster_display(int n, Window f, int w, int h, bool timed) const{
 }
 
 
-solutions solutions_parser(){
-
-    ifstream bestsols_file("/home/arnaud/Documents/Rechop/paris_test.txt", ios::in); // on ouvre le fichier en lecture
-
-    vector<vector<int>> file_table;
-    solutions sols;
-    sols.solutions_number =0;
-
-    for (string line; getline(bestsols_file,line);){
-        vector<int> line_table;
-        if (line[0] == 'b')
-            line_table.push_back(-1);
-        else
-            line_table.push_back(0);
-        int l = line.length();
-
-        int i=2;
-        while (i<l){
-
-            string number;
-            while (line[i] != ' ' && i<l){
-                number += line[i];
-                i+=1;
-            }
-            i+=1;
-            line_table.push_back(stoi(number));
-        }
-        file_table.push_back(line_table);
-    }
-
-    int i =0;
-    int count =0;
-    while (i<file_table.size()){
-        int collect_lines_number = 0;
-        if (file_table[i][0] == -1){
-            solution bestsol;
-
-            bool a = true;
-            while (i+collect_lines_number+1<file_table.size() && a)
-                if (file_table[i+collect_lines_number+1][0] == 0)
-                        collect_lines_number += 1;
-                    else a = false;
-            bestsol.loop_size = file_table[i].size()-2;
-            bestsol.dist_id = file_table[i][1];
-            for (int j=0;j<bestsol.loop_size;j++)
-                bestsol.loop[j] = file_table[i][j+2];
-
-            for (int k=0; k<30;k++)
-                bestsol.antenna_groups[k].group_size =0;
-
-            if (collect_lines_number !=0)
-                for (int k=0;k<collect_lines_number;k++)
-                    for (int j=0;j<bestsol.loop_size;j++)
-                        if (bestsol.loop[j] == file_table[i+k+1][1]){
-                            bestsol.antenna_groups[j].group_size = file_table[i+k+1].size() - 2;
-                            for (int n=0;n< bestsol.antenna_groups[j].group_size; n++)
-                                bestsol.antenna_groups[j].antennas[n] = file_table[i+k+1][n+2];
-                        }
-            sols.solutions_list[count] = bestsol;
-            count+=1;
-            sols.solutions_number +=1;
-
-            }
-
-
-        i+=max(1,collect_lines_number);
-    }
-
-    bestsols_file.close();
-    return sols;
-}
