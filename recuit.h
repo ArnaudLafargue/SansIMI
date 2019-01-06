@@ -8,7 +8,8 @@ public:
     float alpha = 0.9;
 
     recuit();
-    solution heuristique(int n, bool display) ;
+    solution heuristique(int n, bool display, Window f, int w, int h);
+    solution heuristique(int n);
     void test();
 
 };

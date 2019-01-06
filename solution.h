@@ -17,12 +17,12 @@ class solution
 {
 public:
     solution();
-    solution(int n);
-    solution(int n,int Loop_size);
 
-    int cost;
-    int dist_id;
-    int loop_size;
+    int cost,
+        dist_id,
+        loop_size,
+        loop_iterations;
+
     int loop[30];
     antenna_group antenna_groups[30];
 
@@ -33,7 +33,7 @@ public:
 
     void copy(solution& Solution) const;
 
-    void save_to_file(int n) const;
+    void save_to_file() const;
 
     void cluster_display(Window f, int w, int h, bool timed) const;
     void full_display(Window f, int w, int h) const;

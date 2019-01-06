@@ -1,9 +1,9 @@
 #include "solutions_parser.h"
 
 
-solutions solutions_parser(){
+solutions solutions_parser(string path){
 
-    ifstream bestsols_file("/home/arnaud/Documents/Rechop/paris_test.txt", ios::in); // on ouvre le fichier en lecture
+    ifstream bestsols_file(path, ios::in); // on ouvre le fichier en lecture
 
     vector<vector<int>> file_table;
     solutions sols;
@@ -59,6 +59,7 @@ solutions solutions_parser(){
                             for (int n=0;n< bestsol.antenna_groups[j].group_size; n++)
                                 bestsol.antenna_groups[j].antennas[n] = file_table[i+k+1][n+2];
                         }
+            bestsol.compute_cost();
             sols.solutions_list[count] = bestsol;
             count+=1;
             sols.solutions_number +=1;

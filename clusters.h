@@ -6,12 +6,17 @@ int l2(int x, int y);
 
 struct cluster
 {
-    int point_distribution;
-    vector<object> cluster_antennas;
-    int size;
-
     cluster();
 
+    int point_distribution;
+
+    int size;
+    vector<object> cluster_antennas;
+
+    double x_max,
+           x_min,
+           y_max,
+           y_min;
 };
 
 

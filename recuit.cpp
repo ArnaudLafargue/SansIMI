@@ -39,17 +39,15 @@ void push(antenna_group& group,int valeur, int position){
     }
 }
 
-solution recuit::heuristique(int n, bool display) {
-
+solution recuit::heuristique(int n){
+    bool display = false;
     Window f;
-    int w;
-    int h;
+    int w,h;
+    return this->heuristique(n,display,f,w,h);
+}
 
-    if (display){
-        w = 1500;
-        h = 1000;
-        f = openWindow(w,h);
-    }
+solution recuit::heuristique(int n, bool display, Window f, int w, int h){
+
 
     int cluster_size = Clusters_const.cluster_list[n].size;
     clusters C = Clusters_const;
@@ -74,8 +72,12 @@ solution recuit::heuristique(int n, bool display) {
 
     if (display){
         x.cluster_display(f,w,h,true);
+        drawString(100,200,"Max iterations: " + to_string(max_iter),BLACK,15);
+
         click();
     }
+
+    x.loop_iterations =0;
 
     while(loop_size<min(30,cluster_size)+1){
         x.copy(x_prime);
@@ -88,12 +90,17 @@ solution recuit::heuristique(int n, bool display) {
         while(T>1){
             for (int counter =0; counter<max_iter;counter++){
 
+                x.loop_iterations += 1;
+
+
                 if (x.cost < x_best.cost){
                     x.copy(x_best);
+
                     if (display)
                         x.cluster_display(f,w,h,true);
 
-                    cout <<"best cost: "<< x_best.cost << endl;
+
+                    else cout <<"best cost: "<< x_best.cost << endl;
                 }
 
 
@@ -182,8 +189,9 @@ solution recuit::heuristique(int n, bool display) {
     if (display){
         x_best.cluster_display(f,w,h,true);
         drawString(100,160,"Cost: " + to_string(x_best.cost),GREEN,20);
+        drawString(100,200,"iterations: " + to_string(x_best.loop_iterations),BLACK,15);
+        cout<<"Click for next cluster"<<endl;
         click();
-        closeWindow(f);
     }
     return x_best;
 }

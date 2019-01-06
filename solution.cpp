@@ -22,24 +22,13 @@ double proba(){
 
 ///////////////////////////////////////Solutions////////////////////////////////////////////////
 
-
-solution::solution(int n,int Loop_size){
-    loop_size = Loop_size;
-    //first_solution();
-}
-
-solution::solution(int n){
-    loop_size = hasard(int(Clusters_const.cluster_list[n].size/6)+1,min(30,Clusters_const.cluster_list[n].size));
-
-    //first_solution();
-}
-
 solution::solution(){
     loop_size=0;
 }
 
 void solution::first_solution(int n){
     InitRandom();
+    loop_iterations = 0;
     dist_id = n;
     cluster cluster_copy = Clusters_const.cluster_list[n];
 
@@ -108,7 +97,7 @@ void solution::copy(solution &Sol) const{
     Sol.loop_size = loop_size;
     Sol.cost = cost;
     Sol.dist_id = dist_id;
-
+    Sol.loop_iterations = loop_iterations;
     for (int i=0;i<loop_size;i++){
         Sol.loop[i] = loop[i];
     }
@@ -123,13 +112,13 @@ void solution::copy(solution &Sol) const{
 }
 
 
-ofstream f("/home/arnaud/Documents/Rechop/paris0.txt");
 
-void solution::save_to_file(int n) const{
-    //ofstream f("/home/arnaud/Documents/Rechop/paris" +to_string(n) + ".txt");
+void solution::save_to_file() const{
+    int n = dist_id;
+    ofstream f("/home/arnaud/Documents/Rechop/paris" +to_string(n) + ".txt");
 
     f << "b ";
-    f << Clusters_const.cluster_list[n].point_distribution;
+    f << n;
     for (int i=0;i<loop_size;i++){
         f <<" "<< loop[i];
     }
@@ -146,37 +135,31 @@ void solution::save_to_file(int n) const{
         }
     }
 }
+
+
+
 using namespace Imagine;
 
 int normalize(double x, int  w, double xmin, double xmax){
-    int result = int((x-xmin)/(xmax-xmin)*w);
-    if (result<0)
-        result =0;
-    if (result>w)
-        result =w;
+    int result = int((((x-xmin)/(xmax-xmin))*0.90 + 0.05)*w);
     return result;
 }
+
+
 void solution::full_display(Window f, int w, int h) const{
     int n = dist_id;
 
-    double xmin = 10000000;
-    double xmax = 0;
-    double ymin = 10000000;
-    double ymax = 0;
+    drawString(100,100+30*n,"Cost " +to_string(n) +" : " + to_string(cost),GREEN,20);
+
     coordinates ccfirst,cclast;
     coordinates distrib_point = Network_const.antennas[n].coords;
-    for (int i=0; i<Network_const.size_antennas;i++){
 
-            coordinates c = Network_const.antennas[i].coords;
-            if (c.x <= xmin)
-                xmin = c.x;
-            else if (c.x >=xmax)
-                xmax = c.x;
-            if (c.y <= ymin)
-                ymin = c.y;
-            else if (c.y >=ymax)
-                ymax = c.y;
-    }
+
+    double xmin = Network_const.x_min;
+    double xmax = Network_const.x_max;
+    double ymin = Network_const.y_min;
+    double ymax = Network_const.y_max;
+
 
     int index;
     for (int i=0; i<loop_size;i++){
@@ -248,39 +231,19 @@ void solution::cluster_display(Window f, int w, int h, bool timed) const{
     drawString(100,130,"Loop size: " + to_string(loop_size),BLACK,20);
     drawString(100,160,"Cost: " + to_string(cost),RED,20);
 
-    double xmin = 10000000;
-    double xmax = 0;
-    double ymin = 10000000;
-    double ymax = 0;
+    if (loop_iterations>0)
+        drawString(100,200,"iterations: " + to_string(loop_iterations),BLACK,15);
+
+
 
     coordinates ccfirst,cclast;
     coordinates distrib_point = Network_const.antennas[n].coords;
-    for (int i=0; i<loop_size;i++){
-        for (int j=0; j<antenna_groups[i].group_size;j++){
 
-            double x = Network_const.antennas[antenna_groups[i].antennas[j]].coords.x;
-            double y = Network_const.antennas[antenna_groups[i].antennas[j]].coords.y;
-            if (x <= xmin)
-                xmin = x;
-            else if (x >=xmax)
-                xmax = x;
-            if (y <= ymin)
-                ymin = y;
-            else if (y >=ymax)
-                ymax = y;
-        }
+    double xmin = Clusters_const.cluster_list[n].x_min;
+    double xmax = Clusters_const.cluster_list[n].x_max;
+    double ymin = Clusters_const.cluster_list[n].y_min;
+    double ymax = Clusters_const.cluster_list[n].y_max;
 
-        double x = Network_const.antennas[loop[i]].coords.x;
-        double y = Network_const.antennas[loop[i]].coords.y;
-        if (x <= xmin)
-            xmin = x;
-        else if (x >=xmax)
-            xmax = x;
-        if (y <= ymin)
-            ymin = y;
-        else if (y >=ymax)
-            ymax = y;
-    }
     int index;
 
     for (int i=0; i<loop_size;i++){

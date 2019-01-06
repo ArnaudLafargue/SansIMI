@@ -60,6 +60,24 @@ network::network()
     size_distribution = d_antennas.size();
     size_antennas = antennas.size();
     size_terminal = t_antennas.size();
+
+    x_min = 1000000;
+    x_max = 0;
+    y_min = 1000000;
+    y_max = 0;
+
+    for (int i=0; i<size_antennas;i++){
+
+            coordinates c = antennas[i].coords;
+            if (c.x <= x_min)
+                x_min = c.x;
+            else if (c.x >=x_max)
+                x_max = c.x;
+            if (c.y <= y_min)
+                y_min = c.y;
+            else if (c.y >=y_max)
+                y_max = c.y;
+    }
 }
 
 

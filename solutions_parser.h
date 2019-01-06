@@ -7,4 +7,4 @@ struct solutions{
     int solutions_number;
 };
 
-solutions solutions_parser();
+solutions solutions_parser(string path);

@@ -18,7 +18,7 @@ cluster::cluster(){
 //////////////////////////////////////////////////clusters/////////////////////////////////////////////////////////////////////////////////////
 
 clusters::clusters(){
-    network N = Network_const;
+
     for (int i=0; i < Network_const.size_distribution; i++){
         cluster Cluster;
         Cluster.point_distribution = i;
@@ -39,6 +39,27 @@ clusters::clusters(){
 
         cluster_list[j_min].cluster_antennas.push_back(Network_const.t_antennas[terminal]);
         cluster_list[j_min].size ++;
+    }
+
+    for (int i=0; i < Network_const.size_distribution; i++){
+
+
+        cluster_list[i].x_min = 10000000;
+        cluster_list[i].x_max = 0;
+        cluster_list[i].y_min = 10000000;
+        cluster_list[i].y_max = 0;
+
+        for (int j=0; j<cluster_list[i].size;j++){
+            coordinates c = cluster_list[i].cluster_antennas[j].coords;
+                if (c.x <= cluster_list[i].x_min)
+                    cluster_list[i].x_min = c.x;
+                else if (c.x >=cluster_list[i].x_max)
+                    cluster_list[i].x_max = c.x;
+                if (c.y <= cluster_list[i].y_min)
+                    cluster_list[i].y_min = c.y;
+                else if (c.y >=cluster_list[i].y_max)
+                    cluster_list[i].y_max = c.y;
+         }
     }
 }
 

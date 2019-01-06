@@ -7,7 +7,7 @@ struct cluster_cost{
 };
 
 
-int main1()
+int threads()
 {
     network Network;
 
@@ -28,8 +28,8 @@ int main1()
 
             solution bestsol;
             recuit Recuit;
-            Recuit.heuristique(c_c.cluster_index,false).copy(bestsol);
-            bestsol.save_to_file(c_c.cluster_index);
+            Recuit.heuristique(c_c.cluster_index).copy(bestsol);
+            bestsol.save_to_file();
             c_c.cost = bestsol.compute_cost();
         }, std::ref(parameters[n]));
 
@@ -49,35 +49,48 @@ int main1()
     return 0;
 }
 
-int main2()
+int compute_solution_to_file(int n, bool display)
 {
-    network Network;
+    Window f;
+    int h,w;
 
-    clusters Clusters;
+    if (display){
+        w = 1500;
+        h = 1000;
+        f = openWindow(w,h);
+    }
 
     int finalcost =0;
     solution bestsol;
-    int n =0;
     recuit Recuit;
-    (Recuit.heuristique(n,true)).copy(bestsol);
-    bestsol.save_to_file(n);
+    (Recuit.heuristique(n,display,f,w,h)).copy(bestsol);
+    bestsol.save_to_file();
     finalcost +=bestsol.compute_cost();
 
     cout << finalcost << "final"<<endl;
 
-
     return 0;
 }
-int main3()
+
+int compute_solutions_to_files(bool display)
 {
+    Window f;
+    int h,w;
+
+    if (display){
+        w = 1500;
+        h = 1000;
+        f = openWindow(w,h);
+    }
+
     int finalcost =0;
     solution bestsol;
     recuit Recuit;
     vector<solution> sols;
 
     for (int n=0; n<Network_const.size_distribution;n++){
-        (Recuit.heuristique(n,false)).copy(bestsol);
-        bestsol.save_to_file(n);
+        (Recuit.heuristique(n,display,f,w,h)).copy(bestsol);
+        bestsol.save_to_file();
         sols.push_back(bestsol);
         finalcost +=bestsol.compute_cost();
 
@@ -88,27 +101,45 @@ int main3()
 }
 
 
-int main4(){
-    solutions sols;
-    sols = solutions_parser();
-
-    //clusters c;
+int parse_solutions(string path){
+    solutions sols = solutions_parser(path);
 
     int w = 3000;
     int h = 2000;
     Window f = openWindow(w,h);
+
+    int total_cost = 0;
     for (int i=0; i<sols.solutions_number;i++){
         sols.solutions_list[i].full_display(f,w,h);
+        total_cost += sols.solutions_list[i].cost;
         //click();
     }
+    cout<<total_cost;
     click();
     return 0;
-
 }
 
 
-
+///Mettre les bons chemins dans network.cpp, solution.cpp pour calculer les solutions
+///Dans le main ci dessous pour les afficher seulement
 
 int main()
-{ return main3();}
+{
+    /// Compute with one of the following
+
+    ///Multithreaded (very bad)
+    //threads();
+
+    ///Choose which cluster to compute
+    //int n=0;
+    //compute_solution_to_file(n);
+
+    ///Default computation
+    compute_solutions_to_files(true);
+
+    ///Print solutions
+    //string path = "/home/arnaud/Documents/Rechop/paris_best.txt";
+    //parse_solutions(path);
+    return 0;
+}
 

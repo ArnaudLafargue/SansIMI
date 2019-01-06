@@ -32,15 +32,20 @@ struct network{
 
     network();
 
-    vector<object> antennas;
-    vector<int> distances;
-    vector<object> t_antennas;
-    vector<object> d_antennas;
+    vector<object> antennas,
+                   t_antennas,
+                   d_antennas;
 
-    int size_distances;
-    int size_distribution;
-    int size_antennas;
-    int size_terminal;
+    vector<int> distances;
+    int size_distances,
+        size_distribution,
+        size_antennas,
+        size_terminal;
+
+    double x_max,
+           x_min,
+           y_max,
+           y_min;
 };
 
 const network Network_const;
