@@ -104,9 +104,14 @@ int compute_solutions_to_files(bool display)
 int parse_solutions(string path){
     solutions sols = solutions_parser(path);
 
+
     int w = 3000;
-    int h = 2000;
+    int h = 3000;
+
     Window f = openWindow(w,h);
+
+    display_network(w,h);
+    display_clusters(w,h);
 
     int total_cost = 0;
     for (int i=0; i<sols.solutions_number;i++){
@@ -115,7 +120,14 @@ int parse_solutions(string path){
         //click();
     }
     cout<<total_cost;
+    drawRect(470,80,500,100,RED,3);
+    drawString(500,150, "Cout total  " + to_string(total_cost),BLACK,40);
+    setActiveWindow(f);
+
+    capture("best.png");
     click();
+
+
     return 0;
 }
 
@@ -135,11 +147,12 @@ int main()
     //compute_solution_to_file(n);
 
     ///Default computation
-    compute_solutions_to_files(true);
+    //compute_solutions_to_files(true);
 
     ///Print solutions
-    //string path = "/home/arnaud/Documents/Rechop/paris_best.txt";
-    //parse_solutions(path);
+    string path = "/home/arnaud/Documents/Rechop/grenoble2.txt";
+    parse_solutions(path);
+
     return 0;
 }
 

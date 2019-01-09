@@ -1,6 +1,5 @@
 #include "recuit.h"
 
-
 recuit::recuit(){}
 
 int pop(antenna_group& group,int j){
@@ -38,6 +37,35 @@ void push(antenna_group& group,int valeur, int position){
         }
     }
 }
+double grad(const vector<coordinates>& cost_iteration){
+    int i;
+    if (cost_iteration.size()>30){
+        int n = 30;
+
+        double xsomme, ysomme, xysomme, xxsomme;
+        double g;
+
+        xsomme = 0.0; ysomme = 0.0;
+        xysomme = 0.0; xxsomme = 0.0;
+
+        for (i=cost_iteration.size()-(n+1);i<cost_iteration.size();i++)
+          {
+            double x = cost_iteration[i].x;
+            double y = cost_iteration[i].y;
+            xsomme = xsomme + x;
+            ysomme = ysomme + y;
+            xysomme = xysomme + x*y;
+            xxsomme = xxsomme + x*x;
+          }
+        g = (n*xysomme - xsomme*ysomme)/(n*xxsomme - xsomme*xsomme);
+
+        return g;
+    }
+    else return -1;
+}
+
+
+
 
 solution recuit::heuristique(int n){
     bool display = false;
@@ -72,35 +100,40 @@ solution recuit::heuristique(int n, bool display, Window f, int w, int h){
 
     if (display){
         x.cluster_display(f,w,h,true);
-        drawString(100,200,"Max iterations: " + to_string(max_iter),BLACK,15);
+        drawString(100,200,"iterations " + to_string(0),BLACK,15);
 
         click();
     }
 
+    vector<vector<coordinates>> cost_iteration_per_loop;
+    int best_loop = 0;
+
     x.loop_iterations =0;
 
     while(loop_size<min(30,cluster_size)+1){
+        vector<coordinates> cost_iteration;
         x.copy(x_prime);
-
+        double swaps =0;
         cout <<"Cluster: "<<n<< " loop size: " << loop_size << endl;
-
         T = 100.;
         proba1 = float (loop_size)/cluster_size;
         bool elements_to_swap;
-        while(T>1){
+        while(T>3){
             for (int counter =0; counter<max_iter;counter++){
 
                 x.loop_iterations += 1;
 
-
                 if (x.cost < x_best.cost){
+                    best_loop = loop_size;
                     x.copy(x_best);
 
-                    if (display)
+                    if (display){
                         x.cluster_display(f,w,h,true);
-
-
+                        setActiveWindow(f);
+                        capture("gif" + to_string(x.loop_iterations) + ".png");
+                    }
                     else cout <<"best cost: "<< x_best.cost << endl;
+
                 }
 
 
@@ -149,18 +182,23 @@ solution recuit::heuristique(int n, bool display, Window f, int w, int h){
                     }
                 }
 
+
                 //On calcule les couts
                 x_prime.compute_cost();
-
+                if (counter%max_iter/100 == 0)
+                    cost_iteration.push_back(coordinates {swaps,x.cost});
                 // si x_prime est meilleur ou au hasard si l'ecart de cout est pas trop grand
-                if (x_prime.cost<x.cost || p<exp(-(x_prime.cost-x.cost)/T))
+                if (x_prime.cost<x.cost || p<exp(-(x_prime.cost-x.cost)/T)){
                     x_prime.copy(x);
+                    cost_iteration.push_back(coordinates {swaps,x.cost});
+                }
                 else
                     x.copy(x_prime);
+                swaps +=1;
+
 
             }
-
-            T= alpha*T;
+            T = alpha*T;
         }
 
         bool change_size = true;
@@ -168,6 +206,10 @@ solution recuit::heuristique(int n, bool display, Window f, int w, int h){
         if(loop_size==cluster_size || loop_size ==30){
             loop_size+=1;//stopping condition
             change_size= false;
+        }
+        if (loop_size == best_loop){
+            cost_iteration_per_loop.clear();
+            cost_iteration_per_loop.push_back(cost_iteration);
         }
 
         while (change_size){
@@ -183,6 +225,7 @@ solution recuit::heuristique(int n, bool display, Window f, int w, int h){
                 change_size=false;
             }
         }
+
         x.compute_cost();
     }
 
@@ -192,6 +235,9 @@ solution recuit::heuristique(int n, bool display, Window f, int w, int h){
         drawString(100,200,"iterations: " + to_string(x_best.loop_iterations),BLACK,15);
         cout<<"Click for next cluster"<<endl;
         click();
+        draw_cost_iteration(h,w,cost_iteration_per_loop[0],best_loop);
+
     }
+
     return x_best;
 }

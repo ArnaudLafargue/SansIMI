@@ -34,7 +34,6 @@ public:
     void copy(solution& Solution) const;
 
     void save_to_file() const;
-
     void cluster_display(Window f, int w, int h, bool timed) const;
     void full_display(Window f, int w, int h) const;
 

@@ -60,6 +60,15 @@ clusters::clusters(){
                 else if (c.y >=cluster_list[i].y_max)
                     cluster_list[i].y_max = c.y;
          }
+        coordinates c = Network_const.antennas[cluster_list[i].point_distribution].coords;
+            if (c.x <= cluster_list[i].x_min)
+                cluster_list[i].x_min = c.x;
+            else if (c.x >=cluster_list[i].x_max)
+                cluster_list[i].x_max = c.x;
+            if (c.y <= cluster_list[i].y_min)
+                cluster_list[i].y_min = c.y;
+            else if (c.y >=cluster_list[i].y_max)
+                cluster_list[i].y_max = c.y;
     }
 }
 

@@ -145,21 +145,18 @@ int normalize(double x, int  w, double xmin, double xmax){
     return result;
 }
 
-
 void solution::full_display(Window f, int w, int h) const{
     int n = dist_id;
 
-    drawString(100,100+30*n,"Cost " +to_string(n) +" : " + to_string(cost),GREEN,20);
-
-    coordinates ccfirst,cclast;
-    coordinates distrib_point = Network_const.antennas[n].coords;
-
+    drawString(100,100+30*n,"Cluster " +to_string(n) +" : " + to_string(cost),BLACK,20);
 
     double xmin = Network_const.x_min;
     double xmax = Network_const.x_max;
     double ymin = Network_const.y_min;
     double ymax = Network_const.y_max;
 
+    coordinates ccfirst,cclast;
+    coordinates distrib_point = Network_const.antennas[n].coords;
 
     int index;
     for (int i=0; i<loop_size;i++){
@@ -167,14 +164,14 @@ void solution::full_display(Window f, int w, int h) const{
         index = Network_const.antennas[loop[i]].index;
 
         int xl1 = normalize(cl1.x,w,xmin,xmax);
-        int yl1 = normalize(cl1.y,h,ymin,ymax);
+        int yl1 = h-normalize(cl1.y,h,ymin,ymax);
         drawString(xl1+10,yl1,to_string(index),BLACK,12);
         drawCircle(xl1,yl1,6,BLACK,3);
 
         if (i<loop_size -1){
             coordinates cl2 = Network_const.antennas[loop[i+1]].coords;
             int xl2 = normalize(cl2.x,w,xmin,xmax);
-            int yl2 = normalize(cl2.y,h,ymin,ymax);
+            int yl2 = h-normalize(cl2.y,h,ymin,ymax);
             drawLine(xl1,yl1,xl2,yl2,BLUE,2);
         }
         if (i==0)
@@ -186,21 +183,21 @@ void solution::full_display(Window f, int w, int h) const{
         if (antenna_groups[i].group_size>0){
             coordinates cc = Network_const.antennas[antenna_groups[i].antennas[0]].coords;
             int xc = normalize(cc.x,w,xmin,xmax);
-            int yc = normalize(cc.y,h,ymin,ymax);
+            int yc = h-normalize(cc.y,h,ymin,ymax);
 
             drawLine(xl1,yl1,xc,yc, BLACK,1);
             for (int j=0; j<antenna_groups[i].group_size;j++){
                 coordinates cc = Network_const.antennas[antenna_groups[i].antennas[j]].coords;
                 index = Network_const.antennas[antenna_groups[i].antennas[j]].index;
                 int xc = normalize(cc.x,w,xmin,xmax);
-                int yc = normalize(cc.y,h,ymin,ymax);
+                int yc = h-normalize(cc.y,h,ymin,ymax);
                 drawString(xc+10,yc+20,to_string(index),RED,10);
 
                 drawCircle(xc,yc,5,RED,3);
                 if (j < antenna_groups[i].group_size -1){
                     coordinates ccp1 = Network_const.antennas[antenna_groups[i].antennas[j+1]].coords;
                     int xcp1 = normalize(ccp1.x,w,xmin,xmax);
-                    int ycp1 = normalize(ccp1.y,h,ymin,ymax);
+                    int ycp1 = h-normalize(ccp1.y,h,ymin,ymax);
                     drawLine(xc,yc,xcp1,ycp1, BLACK,1);
                 }
 
@@ -208,13 +205,13 @@ void solution::full_display(Window f, int w, int h) const{
         }
     }
     int cc1x = normalize(ccfirst.x,w,xmin,xmax);
-    int cc1y = normalize(ccfirst.y,h,ymin,ymax);
+    int cc1y = h-normalize(ccfirst.y,h,ymin,ymax);
 
     int cclx = normalize(cclast.x,w,xmin,xmax);
-    int ccly = normalize(cclast.y,h,ymin,ymax);
+    int ccly = h-normalize(cclast.y,h,ymin,ymax);
 
     int xd = normalize(distrib_point.x,w,xmin,xmax);
-    int yd = normalize(distrib_point.y,h,ymin,ymax);
+    int yd = h-normalize(distrib_point.y,h,ymin,ymax);
 
     drawLine(cc1x,cc1y,xd,yd,BLUE,2);
     drawLine(xd,yd,cclx,ccly,BLUE,2);
@@ -251,7 +248,7 @@ void solution::cluster_display(Window f, int w, int h, bool timed) const{
         index = Network_const.antennas[loop[i]].index;
 
         int xl1 = normalize(cl1.x,w,xmin,xmax);
-        int yl1 = normalize(cl1.y,h,ymin,ymax);
+        int yl1 = h-normalize(cl1.y,h,ymin,ymax);
         drawString(xl1+7,yl1+7,to_string(index),BLACK,12);
         drawCircle(xl1,yl1,6,BLACK,3);
 
@@ -263,28 +260,28 @@ void solution::cluster_display(Window f, int w, int h, bool timed) const{
         if (i<loop_size -1){
             coordinates cl2 = Network_const.antennas[loop[i+1]].coords;
             int xl2 = normalize(cl2.x,w,xmin,xmax);
-            int yl2 = normalize(cl2.y,h,ymin,ymax);
+            int yl2 = h-normalize(cl2.y,h,ymin,ymax);
             drawLine(xl1,yl1,xl2,yl2,BLUE,2);
         }
 
         if (antenna_groups[i].group_size>0){
             coordinates cc = Network_const.antennas[antenna_groups[i].antennas[0]].coords;
             int xc = normalize(cc.x,w,xmin,xmax);
-            int yc = normalize(cc.y,h,ymin,ymax);
+            int yc = h-normalize(cc.y,h,ymin,ymax);
 
             drawLine(xl1,yl1,xc,yc, BLACK,1);
             for (int j=0; j<antenna_groups[i].group_size;j++){
                 coordinates cc = Network_const.antennas[antenna_groups[i].antennas[j]].coords;
                 index = Network_const.antennas[antenna_groups[i].antennas[j]].index;
                 int xc = normalize(cc.x,w,xmin,xmax);
-                int yc = normalize(cc.y,h,ymin,ymax);
+                int yc = h-normalize(cc.y,h,ymin,ymax);
                 drawString(xc+7,yc+7,to_string(index),RED,10);
 
                 drawCircle(xc,yc,5,RED,3);
                 if (j < antenna_groups[i].group_size -1){
                     coordinates ccp1 = Network_const.antennas[antenna_groups[i].antennas[j+1]].coords;
                     int xcp1 = normalize(ccp1.x,w,xmin,xmax);
-                    int ycp1 = normalize(ccp1.y,h,ymin,ymax);
+                    int ycp1 = h-normalize(ccp1.y,h,ymin,ymax);
                     drawLine(xc,yc,xcp1,ycp1, BLACK,1);
                 }
 
@@ -292,13 +289,13 @@ void solution::cluster_display(Window f, int w, int h, bool timed) const{
         }
     }
     int cc1x = normalize(ccfirst.x,w,xmin,xmax);
-    int cc1y = normalize(ccfirst.y,h,ymin,ymax);
+    int cc1y = h-normalize(ccfirst.y,h,ymin,ymax);
 
     int cclx = normalize(cclast.x,w,xmin,xmax);
-    int ccly = normalize(cclast.y,h,ymin,ymax);
+    int ccly = h-normalize(cclast.y,h,ymin,ymax);
 
     int xd = normalize(distrib_point.x,w,xmin,xmax);
-    int yd = normalize(distrib_point.y,h,ymin,ymax);
+    int yd = h-normalize(distrib_point.y,h,ymin,ymax);
 
     drawLine(cc1x,cc1y,xd,yd,BLUE,2);
     drawLine(xd,yd,cclx,ccly,BLUE,2);

@@ -11,8 +11,8 @@ object::object(){
 
 network::network()
 {
-    ifstream distances_file("/home/arnaud/Documents/KIRO/paris/distances.csv", ios::in); // on ouvre le fichier en lecture
-    ifstream coordinates_file("/home/arnaud/Documents/KIRO/paris/nodes.csv", ios::in);
+    ifstream distances_file(srcPath("instances/paris/distances.csv"), ios::in); // on ouvre le fichier en lecture
+    ifstream coordinates_file(srcPath("instances/paris/nodes.csv"), ios::in);
 
     string line;
 
